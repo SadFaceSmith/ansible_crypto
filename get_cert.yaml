@@ -1,0 +1,20 @@
+---
+  - name: Get Cert Info
+    hosts: localhost
+    connection: local
+    become: no
+    gather_facts: no
+    tasks:
+      - name: Get a cert from an https port
+        community.crypto.get_certificate:
+          host: "{{ host | default('www.google.com') }}"
+          port: 443
+        delegate_to: localhost
+        run_once: true
+        register: cert
+      - name: Print Cert Info
+        debug:
+          msg: "{{ cert.subject }}"
+      - name: Cert Expires on
+        debug:
+          msg: "{{ cert.not_after | to_datetime('%Y%m%d%H%M%SZ') }}"
